@@ -3,6 +3,8 @@ var app, base, concat, directory, gulp, gutil, hostname, path, refresh, sass, ug
 
 var autoPrefixBrowserList = ['last 2 version', 'safari 5', 'ie 8', 'ie 9', 'opera 12.1', 'ios 6', 'android 4'];
 
+var surge = require('gulp-surge')
+
 //load all of our dependencies
 //add more here if you want to include more libraries
 gulp        = require('gulp');
@@ -18,6 +20,7 @@ autoprefixer = require('gulp-autoprefixer');
 gulpSequence = require('gulp-sequence').use(gulp);
 shell       = require('gulp-shell');
 plumber     = require('gulp-plumber');
+
 
 gulp.task('browserSync', function() {
     browserSync({
@@ -192,6 +195,14 @@ gulp.task('scaffold', function() {
   );
 });
 
+//upload to surge
+gulp.task('upload', [], function () {
+  return surge({
+    project: './dist',
+    domain: 'example.surge.sh'  // Your domain or Surge subdomain
+  })
+})
+
 //this is our master task when you run `gulp` in CLI / Terminal
 //this is the main watcher to use when in active development
 //  this will:
@@ -207,4 +218,4 @@ gulp.task('default', ['browserSync', 'scripts', 'styles'], function() {
 });
 
 //this is our deployment task, it will set everything for deployment-ready files
-gulp.task('deploy', gulpSequence('clean', 'scaffold', ['scripts-deploy', 'styles-deploy', 'images-deploy'], 'html-deploy'));
+gulp.task('deploy', gulpSequence('clean', 'scaffold', ['scripts-deploy', 'styles-deploy', 'images-deploy'], 'html-deploy', 'upload') );
